@@ -1,0 +1,85 @@
+目录
+一、	Docker简介	1
+二、	Docker安装	2
+三、	Docker重点模块	2
+1)	Client端	3
+2)	Server端	3
+3)	仓库	3
+4)	镜像	3
+5)	容器	3
+四、	Docker案例	3
+1)	案例一:拉取Nginx，运行nginx服务器	3
+2)	案例二:通过Dokerfile制作MySQL镜像，运行MySQL服务器	4
+五、Docker常用命令	4
+六、总结	5
+
+一、	Docker简介
+ 	Docker 是一个开源的应用容器引擎，让开发者可以打包他们的应用以及依赖包到一个可移植的容器中，然后发布到任何流行的 Linux 机器上，也可以实现虚拟化。容器是完全使用沙箱机制，相互之间不会有任何接口。
+二、	Docker安装
+本案例给予CentOS版本进行安装Docker。其它操作系统安装略。
+详细步骤如下：
+1.	检查CentOS的内核版本。必须大于3.10，不让安装不上Docker
+命令：uname  -r
+2.	 安装Docker
+命令：yum –y  install  docker
+3.	启动Docker 后台服务
+命令：service  docker   start  
+4.	检查Docker 的client、server是否启动，正常启动会显示client 和server的版本信息 
+命令： docker version 
+5.	查看Docker  自带的image
+命令：docker images
+6.	恭喜你安装成功
+三、	Docker重点模块
+ ![images]
+1)	Client端
+User 通过Docker客户端 和Docker服务端（守护进程）进行通讯。Docker客户端转发命令给宿主机上的Docker守护进程，Docker守护进程接收执行命令，返回命令执行结果。
+2)	Server端
+Docker服务端 开启（守护进程）用于接收执行命令，返回命令执行结果。
+3)	仓库
+Docker 仓库用来保存镜像，可以理解为代码控制中的代码仓库。类似于maven仓库。只是它存放的是镜像。
+4)	镜像
+Docker 镜像是用于创建 Docker 容器的模板。开发人员需要将自己的代码、文件、软件等制作成一个镜像进行交付。
+5)	容器
+通过Docker 镜像是用于启动一个容器。该容器采用沙箱完全与外部隔离，一旦销毁运行在里面的数据也将随之销毁。可采用本地存储的方式将外部目录挂载到容器里，实现本地存储。
+四、	Docker案例
+1)	案例一:拉取Nginx，运行nginx服务器
+	 从仓库中拉取nginx镜像
+命令：docker 	pull	nginx
+	利用nginx镜像启动一个nginx容器
+命令：run -p 8080:80 --name nginx_web  -d nginx
+	查看后台nginx容器是否启动
+命令：docker  ps 	-a
+	查看效果是不是nginx首页
+Web访问：http://IP:8080
+2)	案例二:通过Dokerfile制作MySQL镜像，运行MySQL服务器
+	创建Dckerfile，里面内容如下
+
+FROM     centos:centos6   ##依赖镜像
+MAINTAINER    baqiwudi   ##创建者的信息
+EVN JAVAHOME /etc/java/jdk	##设置系统环境变量
+RUN  yum install -y mysql-server mysql  ##安装数据库
+RUN /etc/init.d/mysqld start &&\  ##启动数据库服务并登陆
+mysql -e "grant  all  privileges  on *.* to 'root'@'%' identified by 'hedongdong';"&&\  
+mysql -e"grant all privileges on *.* to 'root'@'localhost' identified by  ‘hedongdong';"&&\  
+    	mysql  -u root –p  hedongdong  
+EXPOSE 3306  ##暴露端口
+CMD ["/usr/bin/mysqld_safe"]  ##镜像时需要执行的程序
+
+
+	利用Dockerfile生产镜像文件（同级目录）
+命令：docker build -t mysql_server .  
+	启动mysql_server镜像生成容器
+命令：docker run --name  mysql –d –p 3306:3306  mysql_server  
+	利用本地工具连接测试mysql数据库
+
+五、Docker常用命令 
+	docker  pull    --help 
+	docker  push   --help
+	docker  run    --help 
+	docker  rm     --help
+	docker  rmi    --help 
+	docker  bulid   --help
+	docker  exec   --help
+六、总结 
+	Docker，一个新的容器技术，它能够在相同的旧服务器上运行的更多的应用程序，这也使得它很容易打包和发布程序。它可以得到相同的硬件上比其他技术运行更多的应用（小的开销内存/ CPU/硬盘，这意味着更低成本）;它使开发人员能够快速创建简单的，现成的运行容器化应用;它使管理和部署应用程序更加容易。Docker的重点学习在于如何编写Dockerfile和shell脚本。
+
