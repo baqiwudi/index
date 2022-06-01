@@ -1,5 +1,5 @@
 
-记录生活记录美
+中文社区：  https://www.githubs.cn/
 
 
 
